@@ -1,0 +1,149 @@
+#! /usr/bin/env python
+# encoding: utf-8
+
+'''
+@author: Milos Subotic <milos.subotic.sm@gmail.com>
+@license: MIT
+
+'''
+
+###############################################################################
+
+import os
+import sys
+import fnmatch
+import shutil
+import datetime
+import glob
+
+import waflib
+
+import crosswaf
+from crosswaf import build_context, after_cmd
+
+###############################################################################
+
+one_file_programs = [
+	'test_leds.cpp',
+]
+
+###############################################################################
+
+def prerequisites(ctx):
+	if sys.platform.startswith('linux'):
+		# Ubuntu.
+		#ctx.exec_command2('apt-get -y install ')
+		#/opt/riscv32im/bin/riscv32-unknown-elf-
+		pass
+	elif sys.platform == 'win32' and os.name == 'nt' and os.path.sep == '/':
+		# MSYS2 Windows /mingw32/bin/python.
+		#ctx.exec_command2('pacman --noconfirm -S ')
+		pass
+
+def options(opt):
+	#opt.load('gcc gxx')
+	opt.load('c cxx')
+	
+	opt.add_option(
+		'--app',
+		dest = 'app',
+		default = None,
+		help = 'App to be run'
+	)
+	
+	opt.add_option(
+		'--compiler',
+		choices = [
+			'riscv',
+			'pc',
+		],
+		help = 'Selection of compiler'
+	)
+	
+	opt.add_option(
+		'--cross-compile',
+		dest = 'CROSS_COMPILE',
+		default = '/opt/riscv32im/bin/riscv32-unknown-elf-',
+		help = 'Cross-compiler'
+	)
+	
+def configure(cfg):
+	
+	cfg.find_program(
+		'python',
+		var = 'PYTHON'
+	)
+	cfg.find_program(
+		'makehex',
+		var = 'MAKEHEX',
+		exts = '.py',
+		path_list = os.path.abspath('../Scripts')
+	)
+
+	cfg.env['options.compiler'] = cfg.options.compiler
+	if cfg.options.compiler == 'pc':
+		cfg.env.ARCH = 'x86-64'
+		cfg.load('gcc g++')
+	elif cfg.options.compiler == 'riscv':
+		cfg.env.ARCH = 'riscv'
+		cfg.env.CROSS_COMPILE = cfg.options.CROSS_COMPILE
+		cfg.load('bare_metal_gcc', tooldir = crosswaf.location)
+		f = [
+			'-g',
+			'-Os',
+		]
+		cfg.env.CFLAGS += f
+		cfg.env.CXXFLAGS += f
+		cfg.env.ASFLAGS += f
+		cfg.env.STLIB_MARKER += ',-T,../bram_sdram.lds,-Map,fw_playground.map'
+	#cfg.env.append_value('CFLAGS', '-std=c99')
+	#cfg.env.append_value('CXXFLAGS', '-std=c++11')
+	
+
+def build(bld):
+	
+	for code_file in one_file_programs:
+		name = os.path.splitext(code_file)[0]
+		source = [code_file]
+		if bld.env.ARCH == 'riscv':
+			source.append('init.S')
+		bld.program(
+			features = 'cxx',
+			includes = '.',
+			source = source,
+			target = name + '.elf'
+		)
+		bld(
+			rule = '"${OBJDUMP}" -S "${SRC}" > "${TGT[0]}"',
+			source = name + '.elf',
+			target = name + '.asm'
+		)
+		bld(
+			rule = '"${OBJCOPY}" -O binary "${SRC}" "${TGT[0]}"',
+			source = name + '.elf',
+			target = name + '.bin'
+		)
+		#TODO Do it in loader.
+		bld(
+			rule = '${MAKEHEX} "${SRC}" 3072 > "${TGT[0]}"',
+			source = name + '.bin',
+			target = name + '.hex'
+		)
+
+
+
+def run(ctx):
+	'''./waf run --app=<NAME>'''
+	if ctx.options.app:
+		if sys.platform == 'win32':
+			# MSYS2
+			ctx.exec_command2('build\\' + ctx.options.app)
+		else:
+			ctx.exec_command2('serial_on')
+			ctx.exec_command2('ls -ll /dev/ttyUSB0')
+			ctx.exec_command2('sleep 1')
+			ctx.exec_command2('ls -ll /dev/ttyUSB0')
+			ctx.exec_command2('./build/' + ctx.options.app)
+			ctx.exec_command2('serial_off')
+
+###############################################################################

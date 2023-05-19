@@ -1,0 +1,101 @@
+#! /usr/bin/env python
+# encoding: utf-8
+
+'''
+@author: Milos Subotic <milos.subotic.sm@gmail.com>
+@license: MIT
+
+'''
+
+###############################################################################
+
+import os
+import sys
+import fnmatch
+import shutil
+import datetime
+import glob
+
+import waflib
+
+#import crosswaf
+#from crosswaf import build_context, after_cmd
+
+###############################################################################
+
+
+QUESTA = '/opt/Mentor/questa_sim/10.4d/questasim/'
+#MODELSIM = '/opt/intelFPGA/20.1/modelsim_ase/'
+MODELSIM = '/opt/intelFPGA/19.1/modelsim_ase/'
+
+###############################################################################
+
+def prerequisites(ctx):
+	if sys.platform.startswith('linux'):
+		# Ubuntu.
+		#ctx.exec_command2('apt-get -y install ')
+		pass
+	elif sys.platform == 'win32' and os.name == 'nt' and os.path.sep == '/':
+		# MSYS2 Windows /mingw32/bin/python.
+		#ctx.exec_command2('pacman --noconfirm -S ')
+		pass
+
+def options(opt):
+	#opt.load('gcc gxx')
+	opt.load('c cxx')
+	
+	opt.add_option(
+		'--modelsim',
+		dest = 'modelsim',
+		default = False,
+		action = 'store_true',
+		help = 'Altera Modelsim instead of Questa'
+	)
+	
+def configure(cfg):
+	cfg.load('gcc gxx')
+	if cfg.options.modelsim:
+		cfg.env.ARCH = 'i386'
+		cfg.env.append_value('CFLAGS', '-m32')
+		cfg.env.append_value('CXXFLAGS', '-m32')
+		cfg.env.append_value('LDFLAGS', '-m32')
+	
+	cfg.env.append_value('CFLAGS', '-std=c99')
+	cfg.env.append_value('CXXFLAGS', '-std=c++11')
+	
+
+def build(bld):
+	if bld.options.modelsim:
+		d = MODELSIM
+	else:
+		d = QUESTA
+	bld.shlib(
+		features = 'cxx',
+		includes = [
+			d + 'include',
+		],
+		source = ['uart_portal.cpp', 'uart.cpp'],
+		target = 'uart_portal'
+	)
+
+
+def run(ctx):
+	if ctx.options.modelsim:
+		p = MODELSIM + '/linuxaloem/vsim'
+	else:
+		p = QUESTA + '/linux_x86_64/vsim'
+	#ctx.exec_command2(p + ' -c -do run.do')
+	ctx.exec_command2(p + ' -do run.do')
+
+###############################################################################
+
+def exec_command2(self, cmd, **kw):
+	# Log output while running command.
+	kw['stdout'] = None
+	kw['stderr'] = None
+	ret = self.exec_command(cmd, **kw)
+	if ret != 0:
+		self.fatal('Command "{}" returned {}'.format(cmd, ret))
+setattr(waflib.Context.Context, 'exec_command2', exec_command2)
+
+###############################################################################
