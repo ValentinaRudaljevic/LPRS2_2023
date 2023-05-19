@@ -1,6 +1,7 @@
 
 - Tasks:
 
+
 	
 - Observations & Conclusions:
 	- Flow:
@@ -8,3 +9,6 @@
 		- FPGA/picorv32__uart_bridge__sdram/
 		- FW/test_lprs_max1000
 		- SW/max1000_riscv_loader/
+
+
+
