@@ -9,5 +9,5 @@ exit 0
 
 
 # RISC-V
-./waf configure --compiler=riscv
+./waf configure --compiler=riscv --cross-compile=/home/student/.arduino15/packages/max1000/tools/riscv32-unknown-elf-gcc/8.2.0-im/bin/riscv32-unknown-elf-
 ./waf build
