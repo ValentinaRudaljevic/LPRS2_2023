@@ -116,7 +116,7 @@ def build(bld):
 		bld(
 			rule = '"${OBJDUMP}" -S "${SRC}" > "${TGT[0]}"',
 			source = name + '.elf',
-			target = name + '.asm'
+			target = name + '.lst'
 		)
 		bld(
 			rule = '"${OBJCOPY}" -O binary "${SRC}" "${TGT[0]}"',
