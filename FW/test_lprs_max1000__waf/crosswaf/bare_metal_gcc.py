@@ -96,13 +96,12 @@ def bare_metal_gcc_common_flags(cfg):
 	# Flags.
 	f = [
 		'-ffreestanding',
-		'-nostdlib',
 	]
 	cfg.env.CFLAGS += f
 	cfg.env.CXXFLAGS += f
 	if asm_over_gcc:
 		cfg.env.ASFLAGS += f
-	cfg.env.LINKFLAGS += f
+	cfg.env.LINKFLAGS += ['-nostdlib']
 
 	
 def configure(cfg):
