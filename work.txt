@@ -9,6 +9,29 @@
 		- FPGA/picorv32__uart_bridge__sdram/
 		- FW/test_lprs_max1000
 		- SW/max1000_riscv_loader/
+		
+		
+riscv build --> ./waf build -v (/Desktop/LPRS2/Project/LPRS2_2023/FW/test_lprs_max1000)
+
+
+export PATH=/home/student/.arduino15/packages/max1000/tools/riscv32-unknown-elf-gcc/8.2.0-im/riscv32-unknown-elf/bin:$PATH
+gcc --version
+export PATH=$PATH:/home/student/.arduino15/packages/max1000/tools/riscv32-unknown-elf-gcc/8.2.0-im/riscv32-unknown-elf/bin
+echo $PATH
+gcc --version
+CROSS_COMPILE=/home/student/.arduino15/packages/max1000/tools/riscv32-unknown-elf-gcc/8.2.0-im/bin/riscv32-unknown-elf-\
+CROSS_COMPILE=/home/student/.arduino15/packages/max1000/tools/riscv32-unknown-elf-gcc/8.2.0-im/bin/riscv32-unknown-elf-
+${CROSS_COMPILE}gcc
+${CROSS_COMPILE}gcc --version\
+${CROSS_COMPILE}gcc --version
+
+
+
+##################################################3
+bram_sdram.lds,-Map,fw_playground.map - novi fajlovi za linker
+
+
+
 
 
 
