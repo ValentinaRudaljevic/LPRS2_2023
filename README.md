@@ -1,5 +1,3 @@
-# LPRS2_2023_MAX1000_RISC_V
-
 # Arduino IDE Environment Setup for Max1000 Board (RISC-V)
 
 This guide provides instructions for setting up the Arduino IDE environment to develop and program the Max1000 board with RISC-V.
