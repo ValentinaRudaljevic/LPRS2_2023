@@ -11,7 +11,7 @@
 
 using namespace std;
 
-#define DEV "/dev/ttyS0"
+#define DEV "/dev/ttyUSB0"
 #define BAUDRATE 2000000
 //TODO Make it argc/argv
 #define FW_FILE "../../FW/Scripts/output.hex"
