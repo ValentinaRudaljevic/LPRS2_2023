@@ -17,7 +17,7 @@ compiler.warning_flags.default=
 compiler.warning_flags.more=-Wall
 compiler.warning_flags.all=-Wall -Wextra
 
-./waf configure --compiler=riscv --cross-compile=/home/student/.arduino15/packages/max1000/tools/riscv32-unknown-elf/8.2.0-im/bin/riscv32-unknown-elf-
+./waf configure --compiler=riscv --cross-compile=$home/.arduino15/packages/max1000/tools/riscv32-unknown-elf/8.2.0-im/bin/riscv32-unknown-elf-
 compiler.path={runtime.tools.riscv32-unknown-elf-gcc-8.2.0-im.path}/bin/
 compiler.c.cmd=riscv32-unknown-elf-gcc
 compiler.c.flags=-c -g -Os {compiler.warning_flags} -std=gnu11 -ffunction-sections -fdata-sections -nostdlib --param max-inline-insns-single=500 -Dprintf=iprintf -MMD
