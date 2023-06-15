@@ -11,10 +11,10 @@
 
 using namespace std;
 
-#define DEV "/dev/ttyUSB0"
+#define DEV "/dev/ttyS0"
 #define BAUDRATE 2000000
 //TODO Make it argc/argv
-#define FW_FILE "../../FW/test_lprs_max1000/build/test_leds.hex"
+#define FW_FILE "../../FW/Scripts/output.hex"
 
 #define CMD_READ 0x40
 #define CMD_WRITE 0x80
