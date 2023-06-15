@@ -6,4 +6,4 @@ exit 0
 ./waf build
 ./waf run
 #TODO instead of ./waf run
-./build/max1000_riscv_loader ../../FW/test_lprs_max1000/build/test_leds.hex
+./build/max1000_riscv_loader ../../FW/Scripts/output.hex
