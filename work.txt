@@ -35,20 +35,40 @@ bram_sdram.lds,-Map,fw_playground.map - novi fajlovi za linker
 #######
 # Linking
 
-
+# waf:
 /home/student/.arduino15/packages/max1000/tools/riscv32-unknown-elf-gcc/8.2.0-im/bin/riscv32-unknown-elf-gcc -nostdlib test_leds.cpp.1.o init.S.1.o -otest_leds.elf -Wl,-Bstatic,-T,../bram_sdram.lds
 
 # Test
 /home/student/.arduino15/packages/max1000/tools/riscv32-unknown-elf-gcc/8.2.0-im/bin/riscv32-unknown-elf-objdump -t -C test_leds.elf
-/home/student/.arduino15/packages/max1000/tools/riscv32-unknown-elf-gcc/8.2.0-im/bin/riscv32-unknown-elf-objdump -S test_leds.elf
+/home/student/.arduino15/packages/max1000/tools/riscv32-unknown-elf-gcc/8.2.0-im/bin/riscv32-unknown-elf-objdump -S -C test_leds.elf
 
-#Linking everything together...
+
+# Original
+## Combine gc-sections, archives, and objects
+recipe.c.combine.pattern="{compiler.path}{compiler.c.elf.cmd}" {compiler.c.elf.flags} "-T{build.variant.path}/{build.ldscript}" "-Wl,-Map,{build.path}/{build.project_name}.map" {compiler.c.elf.extra_flags} -o "{build.path}/{build.project_name}.elf" "-L{build.path}" -Wl,--cref -Wl,--check-sections -Wl,--gc-sections -Wl,--unresolved-symbols=report-all -Wl,--warn-common -Wl,--warn-section-align -Wl,--start-group {compiler.combine.flags} {object_files} "{build.path}/{archive_file}" -W
+
+# Cutted a lot:
+recipe.c.combine.pattern="{compiler.path}{compiler.c.elf.cmd}"  "-Wl,-Bstatic,-T{build.variant.path}/{build.ldscript}" {compiler.c.elf.extra_flags} -o "{build.path}/{build.project_name}.elf"  {object_files} "{build.path}/{archive_file}"
+
+
+# Arduino IDE:
+# Does not work.
 /home/student/.arduino15/packages/max1000/tools/riscv32-unknown-elf-gcc/8.2.0-im/bin/riscv32-unknown-elf-gcc -Os -Wl,--gc-sections -T/home/student/.arduino15/packages/max1000/hardware/riscv/0.1.0/variants/max1000_riscv/linker_scripts/gcc/bram_sdram.lds -Wl,-Map,/tmp/arduino_build_586640/test_lprs_max1000__Arduino_IDE.ino.map -nostdlib -o /tmp/arduino_build_586640/test_lprs_max1000__Arduino_IDE.ino.elf -L/tmp/arduino_build_586640 -Wl,--cref -Wl,--check-sections -Wl,--gc-sections -Wl,--unresolved-symbols=report-all -Wl,--warn-common -Wl,--warn-section-align -Wl,--start-group -u _sbrk -u link -u _close -u _fstat -u _isatty -u _lseek -u _read -u _write -u _exit -u kill -u _getpid /tmp/arduino_build_586640/sketch/test_lprs_max1000__Arduino_IDE.ino.cpp.o /tmp/arduino_build_586640/core/variant.cpp.o /tmp/arduino_build_586640/../arduino_cache_12061/core/core_max1000_riscv_max1000_riscv_8df06dc10e7d66f9ba811d318c221420.a -W
 
 
+# Have symbols, but lack init.S statup code.
+/home/student/.arduino15/packages/max1000/tools/riscv32-unknown-elf-gcc/8.2.0-im/bin/riscv32-unknown-elf-gcc -Wl,-Bstatic,-T/home/student/.arduino15/packages/max1000/hardware/riscv/0.1.0/variants/max1000_riscv/linker_scripts/gcc/bram_sdram.lds -nostdlib -o /tmp/arduino_build_586640/test_lprs_max1000__Arduino_IDE.ino.elf /tmp/arduino_build_586640/sketch/test_lprs_max1000__Arduino_IDE.ino.cpp.o /tmp/arduino_build_586640/core/variant.cpp.o /tmp/arduino_build_586640/../arduino_cache_12061/core/core_max1000_riscv_max1000_riscv_8df06dc10e7d66f9ba811d318c221420.a -W
+
+
+# Test
+/home/student/.arduino15/packages/max1000/tools/riscv32-unknown-elf-gcc/8.2.0-im/bin/riscv32-unknown-elf-objdump -t -C /tmp/arduino_build_586640/test_lprs_max1000__Arduino_IDE.ino.elf
+/home/student/.arduino15/packages/max1000/tools/riscv32-unknown-elf-gcc/8.2.0-im/bin/riscv32-unknown-elf-objdump -S -C /tmp/arduino_build_586640/test_lprs_max1000__Arduino_IDE.ino.elf
 
 
 
+#MAKE .hex
+
+python3 makehex.py ../test_lprs_max1000__Arduino_IDE/test_lprs_max1000__Arduino_IDE.ino 166
 
 
 
